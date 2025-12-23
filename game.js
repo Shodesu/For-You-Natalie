@@ -517,43 +517,58 @@ function drawCat(x, y, flip) {
 
     ctx.restore();
 }
-function drawDog(x, y) {
+/**
+ * Draws a dog that faces the direction of travel.
+ * @param {number} x - Horizontal position
+ * @param {number} y - Vertical position
+ * @param {number} direction - 1 for Right, -1 for Left
+ */
+function drawDog(x, y, direction = 1) {
     ctx.save();
+
+    // Move to position and flip based on direction
+    ctx.translate(x, y);
+    ctx.scale(direction, 1);
+
+    // Center the dog so it flips around its middle
+    // (Moving drawing 20px left and 10px up)
+    const offsetX = -20;
+    const offsetY = -10;
     const bounce = Math.sin(Date.now() / 200) * 2;
     
     // Body
-    ctx.fillStyle = '#d97706'; // Golden Brown
+    ctx.fillStyle = '#d97706';
     ctx.beginPath();
-    ctx.roundRect(x, y + bounce, 40, 25, 10);
+    ctx.roundRect(offsetX, offsetY + bounce, 40, 25, 10);
     ctx.fill();
 
     // Head
     ctx.beginPath();
-    ctx.roundRect(x + 25, y - 8 + bounce, 22, 22, 8);
+    ctx.roundRect(offsetX + 25, offsetY - 8 + bounce, 22, 22, 8);
     ctx.fill();
 
-    // Floppy Ear (Moves with the bounce)
+    // Floppy Ear
     ctx.fillStyle = '#92400e'; 
     ctx.beginPath();
-    ctx.roundRect(x + 22, y - 8 + (bounce * 1.5), 10, 18, 5);
+    ctx.roundRect(offsetX + 22, offsetY - 8 + (bounce * 1.5), 10, 18, 5);
     ctx.fill();
 
     // Big Puppy Eyes
     ctx.fillStyle = '#27272a';
-    ctx.beginPath(); ctx.arc(x + 35, y + 2 + bounce, 2.5, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(x + 43, y + 2 + bounce, 2.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(offsetX + 35, offsetY + 2 + bounce, 2.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(offsetX + 43, offsetY + 2 + bounce, 2.5, 0, Math.PI * 2); ctx.fill();
 
     // Tiny Nose
     ctx.fillStyle = 'black';
-    ctx.beginPath(); ctx.arc(x + 47, y + 6 + bounce, 2, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(offsetX + 47, offsetY + 6 + bounce, 2, 0, Math.PI * 2); ctx.fill();
 
     // Wagging Tail
     ctx.strokeStyle = '#d97706';
     ctx.lineWidth = 5;
     ctx.lineCap = 'round';
     ctx.beginPath();
-    ctx.moveTo(x, y + 15 + bounce);
-    ctx.lineTo(x - 10, y + 10 + (Math.sin(Date.now()/100) * 10));
+    ctx.moveTo(offsetX, offsetY + 15 + bounce);
+    ctx.lineTo(offsetX - 10, offsetY + 10 + (Math.sin(Date.now() / 100) * 10));
     ctx.stroke();
 
     ctx.restore();
@@ -722,7 +737,11 @@ function draw() {
     if (current.spikes) current.spikes.forEach(s => drawBarbedBush(s.x, s.y, s.w));
     current.items.forEach(item => { ctx.fillStyle = '#fffbeb'; ctx.fillRect(item.x, item.y, 25, 30); ctx.strokeStyle = '#d97706'; ctx.strokeRect(item.x, item.y, 25, 30); });
     drawTorii(current.goal.x, current.goal.y); 
-    current.enemies.forEach(en => drawDog(en.x, en.y)); 
+    current.enemies.forEach(en => {
+    // Determine enemy direction based on their dx
+    const enDir = en.dx >= 0 ? 1 : -1;
+    drawDog(en.x, en.y, enDir);
+}); 
     drawCat(player.x, player.y, player.flip);
     ctx.restore();
     if (currentStage === 3) {
