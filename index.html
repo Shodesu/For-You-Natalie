@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sakura Cat Platformer</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #fce7f3; /* Matching pink background */
+            overflow: hidden;
+        }
+
+        /* The game screen */
+        canvas {
+            border: 5px solid #fb7185;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            max-width: 500px;
+            background: #fff5f7;
+            border: 4px solid #fb7185;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.3);
+            z-index: 100;
+            font-family: 'Georgia', serif;
+            color: #4b2c20;
+            text-align: center;
+        }
+
+        #message-text {
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            padding-right: 10px;
+            font-style: italic;
+            text-align: left;
+        }
+
+        /* Custom Scrollbar */
+        #message-text::-webkit-scrollbar { width: 6px; }
+        #message-text::-webkit-scrollbar-thumb { background: #fda4af; border-radius: 10px; }
+
+        button {
+            background: #fb7185;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover { background: #e11d48; }
+
+        #main-menu {
+    position: absolute;
+    width: 800px;
+    height: 400px;
+    background: rgba(255, 245, 247, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+    border-radius: 10px;
+    border: 5px solid #fb7185;
+}
+
+#main-menu h1 {
+    font-family: 'Georgia', serif;
+    font-size: 48px;
+    color: #e11d48;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px #fbcfe8;
+}
+
+#main-menu p {
+    color: #4b2c20;
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+    </style>
+</head>
+<body>
+    <div id="main-menu">
+        <h1>Sakura Cat</h1>
+        <p>Arrows to Move | Space/Up to Jump/Double jump | Shift to Run</p>
+        <button onclick="startGame()">Start Journey</button>
+    </div>
+
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+
+    <div id="overlay">
+        <div id="message-text"></div>
+        <button onclick="resumeGame()">Close Letter</button>
+    </div>
+    
+    <div id="gift-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at center, #1e1b4b 0%, #0f172a 100%); z-index:2000; text-align:center; color:#fce7f3; font-family:'Georgia', serif; backdrop-filter: blur(8px);">
+    
+    <div style="margin-top: 80px; animation: fadeIn 2s ease-in;">
+        <h2 style="font-size: 2.5rem; color: #fda4af; text-shadow: 0 0 20px rgba(251, 113, 133, 0.5); letter-spacing: 2px;">A Final Offering</h2>
+        <p style="font-style: italic; opacity: 0.8;">The journey is complete. Choose a gift to carry with you into the dawn.</p>
+    </div>
+
+    <div style="display:flex; justify-content:center; gap:60px; margin-top:50px;">
+        <div onclick="openGift('wisdom')" class="gift-box" style="cursor:pointer; transition: transform 0.3s ease;">
+            <div style="font-size:70px; filter: drop-shadow(0 0 15px #fcd34d);">🎁</div>
+            <p style="margin-top:10px; font-weight:bold; color:#fcd34d;">Gift of Wisdom</p>
+        </div>
+        
+        <div onclick="openGift('memory')" class="gift-box" style="cursor:pointer; transition: transform 0.3s ease;">
+            <div style="font-size:70px; filter: drop-shadow(0 0 15px #fb7185);">🎁</div>
+            <p style="margin-top:10px; font-weight:bold; color:#fb7185;">Gift of Memory</p>
+        </div>
+    </div>
+
+    <div id="gift-content" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.98); z-index:2100; padding:50px; box-sizing:border-box; animation: fadeIn 0.8s ease-out;">
+    
+    <div style="display:flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(253, 164, 175, 0.3); padding-bottom: 15px; margin-bottom: 30px;">
+        <button onclick="closeGift()" style="background: none; border: 1px solid #fda4af; color: #fda4af; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-family: 'Georgia'; transition: 0.3s;" onmouseover="this.style.background='rgba(253, 164, 175, 0.1)'" onmouseout="this.style.background='none'">
+            ← Back to Gifts
+        </button>
+        <span id="gift-title-header" style="color: #fda4af; font-size: 1.2rem; letter-spacing: 1px;"></span>
+    </div>
+
+    <div id="gift-scroll-area" style="max-width: 800px; margin: 0 auto; height: 70vh; overflow-y: auto; line-height: 2; font-size: 1.2rem; color: #fdf2f8; padding-right: 20px;">
+        <p id="gift-text" style="white-space: pre-line;"></p>
+    </div>
+
+    <div style="text-align: center; margin-top: 30px;">
+        <p style="font-size: 0.9rem; opacity: 0.5; font-style: italic;">Your journey lives on in the falling petals.</p>
+        <button onclick="location.reload()" style="background:none; border:none; color:#fda4af; text-decoration:underline; cursor:pointer; font-size: 0.8rem; margin-top:10px;">Restart Game</button>
+    </div>
+</div>
+
+<style>
+    /* Aesthetic scrollbar for the long text */
+    #gift-scroll-area::-webkit-scrollbar { width: 6px; }
+    #gift-scroll-area::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+    #gift-scroll-area::-webkit-scrollbar-thumb { background: #fda4af; border-radius: 10px; }
+
+    .gift-box:hover { transform: scale(1.1) translateY(-10px); }
+    
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+    <script src="game.js"></script>
+</body>
+</html>
