@@ -166,7 +166,7 @@ const levelData = {
         
         "I look to her when searching for my way,\n" +
         "The moon that turns the night-time into day.\n" +
-        "My inspiration and my constant friend,\n" +
+        "My inspiration and my wuvvv,\n" +
         "A love on which I know I can depend,\n" +
         "More beautiful than any words can say." },
 
@@ -199,7 +199,7 @@ const levelData = {
         enemies: [
             {x: 2600, y: 340, w: 40, h: 30, dx: 10, range: [2500, 3100]}
         ],
-        goal: {x: 4900, y: 290, w: 60, h: 80, endText: "Waaaaahhhh, You finished the game!!! Did you enjoy it? uhhh well did it make you angry?...uhh whahahhhahah do you love it?...I exerted a lot of effort creating this...I thought that maybe instead of just giving you something...what if I create something instead....to you know...show you how much I appreciate your presence...hehe But this is not just my gift for yah...Really." }
+        goal: {x: 4900, y: 290, w: 60, h: 80, endText: "Waaaaahhhh, You finished the game!!! Did you enjoy it? uhhh well did it make you angry?...uhh whahahhhahah Did you love it?...I exerted a lot of effort creating this...I thought that maybe instead of just giving you something...what if I create something instead....to you know...show you how much I appreciate your presence...hehe But this is not just my gift for yah...Really." }
     }
 };
 
@@ -751,7 +751,7 @@ function draw() {
     }
     ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'; petals.forEach(p => ctx.fillRect((p.x - cameraX * zoom) % canvas.width, p.y, 4, 4));
     ctx.fillStyle = '#be123c'; ctx.font = "bold 22px 'Georgia'"; 
-    ctx.fillText(`Stage: ${currentStage} 🌸 Petals: ${itemsCollected}`, 20, 40);
+    ctx.fillText(`Stage: ${currentStage} 🌸 Notes: ${itemsCollected}`, 20, 40);
     if (deathsInStage >= PITY_THRESHOLD) {
         ctx.fillStyle = '#e11d48'; ctx.font = "italic 16px 'Georgia'";
         ctx.fillText("The wind carries you... (Triple Jump Unlocked!)", 20, 70);
